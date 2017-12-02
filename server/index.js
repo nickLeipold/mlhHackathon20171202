@@ -9,7 +9,13 @@ var v = new Validator();
 var app = express();
 
 // In memory db for fast speed
-var db = {};
+var db = {
+    asdf: {
+        gameState: 'lobby',
+        currentPlayer: 'b',
+        board: 'rnbqkbnr/pppppppp/rnbqkbnr/8/8/RNBQKBNR/PPPPPPPP/RNBQKBNR'
+    }
+};
 
 app.use(express.json());
 
@@ -23,18 +29,19 @@ app.use(function(req, res, next) {
 // API
 app.get("/api/newgame", function(req, res, next) {
     var sessionKey = newSessionKey();
-    
+
     db[sessionKey] = {
         gameState: 'lobby',
         currentPlayer: 'w',
         board: newBoard(),
     };
 
+    res.status(200);
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({
+    res.json({
         sessionKey: sessionKey,
         board: encodeBoard(db[sessionKey].board)
-    }));
+    });
 
 
     next();
@@ -60,12 +67,13 @@ app.post("/api/newgame", function(req, res, next) {
             });
 
             if (req.body.sessionKey in db) {
-                responseJSON.board = encodeBoard(db[req.body.sessionKey]);
+                responseJSON.board = encodeBoard(db[req.body.sessionKey].board);
                 responseJSON.status = 'found';
 
                 log({
                     message: 'Session found'
                 });
+                res.status(200);
             } else {
                 responseJSON.board = encodeBoard(newBoard());
                 responseJSON.status = 'not found';
@@ -74,28 +82,59 @@ app.post("/api/newgame", function(req, res, next) {
                     message: 'Session not found',
                     session: req.body.sessionKey
                 });
+                res.status(404);
             }
         } else {
             log({
                 message: 'Body failed validation',
                 body: JSON.stringify(req.body)
             });
+            res.status(403);
         }
     } else {
         log({
             message: 'Body does not contain JSON'
         });
+        res.status(403);
     }
 
-
-
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(responseJSON));
+    res.json(responseJSON);
 
     next();
 });
 
-//app.get('/api/game/'
+app.get('/api/game/*', function(req, res, next) {
+    var responseJSON = {
+        status: 'failed',
+        gamestate: '',
+        board: [],
+        currentPlayer: ''
+    };
+
+    if (req.urlPath.split('/').length === 4) {
+        var sessionKey = req.urlPath.split('/')[3];
+        if (sessionKey in db) {
+            var session = db[sessionKey];
+            responseJSON.status = 'success';
+            responseJSON.gameState = session.gameState;
+            responseJSON.board = encodeBoard(session.board);
+            responseJSON.currentPlayer = session.currentPlayer;
+            res.status(200);
+        } else {
+            responseJSON.status = 'Could not find session';
+            res.status(404);
+        }
+    } else {
+        responseJSON.status = 'Invalid game URL';
+        res.status(403);
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(responseJSON);
+
+    next();
+});
 
 // Should be the last middleware
 app.use(function(req, res, next) {
