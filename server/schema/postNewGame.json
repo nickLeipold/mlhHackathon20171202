@@ -1,0 +1,10 @@
+{
+    "title": "Join new game",
+    "type": "object",
+    "properties": {
+        "sessionKey": {
+            "type": "string"
+        }
+    },
+    "required": ["sessionKey"]
+}
