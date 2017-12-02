@@ -95,7 +95,7 @@ app.post("/api/newgame", function(req, res, next) {
     next();
 });
 
-app.get('/api/game/'
+//app.get('/api/game/'
 
 // Should be the last middleware
 app.use(function(req, res, next) {
