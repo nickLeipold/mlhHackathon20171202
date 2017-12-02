@@ -33,7 +33,7 @@ app.get("/api/newgame", function(req, res, next) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({
         sessionKey: sessionKey,
-        board: db[sessionKey].board
+        board: encodeBoard(db[sessionKey].board)
     }));
 
 
