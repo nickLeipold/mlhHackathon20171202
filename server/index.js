@@ -157,12 +157,12 @@ function newBoard() {
 function encodeBoard(board) {
     var boardArray = [];
     for (var i = 0; i < board.length; ++i) {
-        var ch = boardArray[i];
+        var ch = board[i];
 
-        if (['r', 'n', 'b', 'q', 'k', 'p'].prototype.includes(ch.toLowerCase())) {
+        if (['r', 'n', 'b', 'q', 'k', 'p'].includes(ch.toLowerCase())) {
             boardArray.push(ch);
-        } else if (!isNan(ch)) {
-            for (var j = 0; j < parseInt(ch); ++i) {
+        } else if (!isNaN(ch)) {
+            for (var j = 0; j < parseInt(ch); ++j) {
                 boardArray.push(' ');
             }
         } else {
