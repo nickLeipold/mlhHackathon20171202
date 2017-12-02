@@ -15,9 +15,6 @@ app.use(express.json());
 
 // Should be the first middleware
 app.use(function(req, res, next) {
-//    log({
-//        message: 'in url middleware'
-//    });
     req.urlPath = URL.parse(req.originalUrl).path;
 
     next();
@@ -26,13 +23,19 @@ app.use(function(req, res, next) {
 // API
 app.get("/api/newgame", function(req, res, next) {
     var sessionKey = newSessionKey();
-    res.send(sessionKey);
-
+    
     db[sessionKey] = {
         gameState: 'lobby',
         currentPlayer: 'w',
         board: newBoard(),
     };
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({
+        sessionKey: sessionKey,
+        board: db[sessionKey].board
+    }));
+
 
     next();
 });
@@ -92,6 +95,7 @@ app.post("/api/newgame", function(req, res, next) {
     next();
 });
 
+app.get('/api/game/'
 
 // Should be the last middleware
 app.use(function(req, res, next) {
