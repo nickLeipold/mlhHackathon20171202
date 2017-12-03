@@ -1,18 +1,57 @@
 
 
 
+
 var data = JSON.parse(httpRequest("http://orion.hugo-klepsch.tech/api/newgame","GET"));
+var player = "w";
 
 console.log(data);
 populateId(data.sessionKey);
+window.setInterval(function(){
+  console.log(JSON.parse(httpRequest("http://orion.hugo-klepsch.tech/api/game/"+data.sessionKey,"GET")));
+}, 1000);
 
 
 var lastClicked;
+var lastSpace;
+var currentSpace;
 var grid = clickableGrid(8,8,function(el,row,col){
-    console.log("You clicked on element:",el);
-    console.log("You clicked on row:",row);
-    console.log("You clicked on col:",col);
-
+    //console.log("You clicked on element:",el);
+    //console.log("You clicked on row:",row);
+    //console.log("You clicked on col:",col);
+    
+    var letter = "";
+    switch(col){
+        case 0:
+            letter = 'a';
+            break;
+        case 1:
+            letter = 'b';
+            break;
+        case 2:
+            letter = 'c';
+            break;
+        case 3:
+            letter = 'd';
+            break;
+        case 4:
+            letter = 'e';
+            break;
+        case 5:
+            letter = 'f';
+            break;
+        case 6:
+            letter = 'g';
+            break;
+        case 7:
+            letter = 'h';
+            break;
+    }
+    
+    lastSpace = currentSpace;
+    
+    currentSpace = letter+(row+1);
+    
     el.className='clicked';
     if (lastClicked) lastClicked.className='';
     lastClicked = el;
@@ -58,12 +97,10 @@ function populateBoard(board){
     var arr2d = [];
     while(board.length) arr2d.push(board.splice(0,8));
     
-    console.log(data.board.length);
     data.board.forEach(function(element,index)
     {
         var j = index%8;
         var i = Math.floor(index/8 );
-        console.log(i+","+j);
         var img = new Image();
         img.onload = function()
         {
@@ -73,6 +110,19 @@ function populateBoard(board){
         
     }); 
 }
+
+function submitMove(){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://orion.hugo-klepsch.tech/api/game/"+data.sessionKey, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        myPlayer: player,
+        move: lastSpace+currentSpace
+    }));
+    console.log( xhr.responseText);
+}
+
+
 
 
 function generateImageTag(piece)
