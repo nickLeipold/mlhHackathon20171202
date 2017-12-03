@@ -5,14 +5,21 @@ import chess, sys, re
 
 pattern = r"[a-hA-H][1-8][a-hA-H][1-8]"
 if len(sys.argv[2]) == 4:
-    boardStr = sys.argv[1] + " KQkq - 1 0"
-    board = chess.Board(boardStr)
+    tempStr = sys.argv[1] + " KQkq - 1 0"
+    boardStr = sys.argv[1]
+    board = chess.Board(tempStr)
     move = chess.Move.from_uci(sys.argv[2])
     code = 0
 
     if board.is_game_over():
         fen = board.fen()
-        print(fen)
+
+        if "w" in fen:
+            new = fen.split(" w ", 1)[0] + " w"
+        else:
+            new = fen.split(" b ", 1)[0] + " b"
+
+        print(new)
     	code = 2
     	sys.exit(code)
 
@@ -22,13 +29,25 @@ if len(sys.argv[2]) == 4:
     	if board.is_game_over():
     		code = 3
     	fen = board.fen()
-    	print(fen)
+
+    	if "w" in fen:
+            new = fen.split(" w ", 1)[0] + " w"
+        else:
+            new = fen.split(" b ", 1)[0] + " b"
+
+        print(new)
     	sys.exit(0)
     else:
     	code = -1
         fen = board.fen()
-        print(fen)
+
+        if "w" in fen:
+            new = fen.split(" w ", 1)[0] + " w"
+        else:
+            new = fen.split(" b ", 1)[0] + " b"
+
+        print(new)
     	sys.exit(code)
 
-print(sys.argv[2])
+print(sys.argv[1])
 sys.exit(-1)
