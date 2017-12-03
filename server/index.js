@@ -170,7 +170,12 @@ app.post('/api/game/*', function(req, res, next) {
                             ]);
                             responseJSON.status = 'success';
                             responseJSON.board = encodeBoard(stdoutText.toString());
-                            db[sessionKey] = stdoutText.toString();
+                            db[sessionKey].board = stdoutText.toString();
+                            log({
+                                message: 'updated board to be',
+                                sessionKey = sessionKey,
+                                board: db[sessionKey].board
+                            });
                         } catch (e) {
                             if (e.status == 3) {
                                 // game over

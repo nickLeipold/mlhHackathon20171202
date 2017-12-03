@@ -20,25 +20,15 @@ if len(sys.argv[2]) == 4:
             new = fen.split(" b ", 1)[0] + " b"
 
         print(new)
-    	code = 2
-    	sys.exit(code)
+        code = 3
+        sys.exit(code)
 
     if move in board.legal_moves:
 
-    	board.push(move)
-    	if board.is_game_over():
-    		code = 3
-    	fen = board.fen()
-
-    	if "w" in fen:
-            new = fen.split(" w ", 1)[0] + " w"
-        else:
-            new = fen.split(" b ", 1)[0] + " b"
-
-        print(new)
-    	sys.exit(0)
-    else:
-    	code = -1
+        board.push(move)
+        if board.is_game_over():
+            code = 3
+            sys.exit(code)
         fen = board.fen()
 
         if "w" in fen:
@@ -47,7 +37,18 @@ if len(sys.argv[2]) == 4:
             new = fen.split(" b ", 1)[0] + " b"
 
         print(new)
-    	sys.exit(code)
+        sys.exit(0)
+    else:
+        code = 4
+        fen = board.fen()
+
+        if "w" in fen:
+            new = fen.split(" w ", 1)[0] + " w"
+        else:
+            new = fen.split(" b ", 1)[0] + " b"
+
+        print(new)
+        sys.exit(code)
 
 print(sys.argv[1])
-sys.exit(-1)
+sys.exit(5)
