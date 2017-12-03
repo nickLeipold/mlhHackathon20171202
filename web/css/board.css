@@ -6,6 +6,14 @@
     text-align:center;
     font-family:sans-serif; font-size:13px
 }
+
+.grid img {
+    width:5vw; 
+    height:5vw;
+    display: inline-block;
+}
+
+
 .grid td.clicked {
     background-color:yellow;
     font-weight:bold; color:red;
