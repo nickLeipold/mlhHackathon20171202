@@ -1,3 +1,4 @@
+var childprocess = require('child_process');
 var express = require('express')
 var URL = require('url');
 
@@ -127,6 +128,74 @@ app.get('/api/game/*', function(req, res, next) {
         }
     } else {
         responseJSON.status = 'Invalid game URL';
+        res.status(403);
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.json(responseJSON);
+
+    next();
+});
+
+app.post('/api/game/*', function(req, res, next) {
+    var responseJSON = {
+        status: 'failed',
+        board: encodeBoard(newBoard())
+    };
+
+    if (req.body !== undefined) {
+        if (v.validate(req.body, postNewGameSchema)) {
+            if (req.urlPath.split('/').length === 4) {
+                var sessionKey = req.urlPath.split('/')[3];
+                if (sessionKey in db) {
+                    var session = db[sessionKey];
+                    if (req.body.myPlayer === session.currentPlayer) {
+                        var boardStr = session.board + ' ' + session.currentPlayer;
+
+                        var stdoutText = '';
+                        try {
+                            var stdoutText = childprocess.execFileSync('/usr/bin/python', [
+                                '/home/webaccess/mlhHackathon20121202/game.py',
+                                boardStr,
+                                req.body.move
+                            ]);
+                            responseJSON.status = 'success';
+                            responseJSON.board = encodeBoard(stdoutText);
+                        } catch (e) {
+                            if (e.status == 2) {
+                                // game over
+                                responseJSON.status = 'gameover';
+                                responseJSON.board = encodeBoard(stdoutText);
+                            } else {
+                                // Illegal move
+                                responseJSON.status = 'illegal';
+                                responseJSON.board = encodeBoard(session.board);
+                            }
+                        }
+
+                    } else {
+                        responseJSON.status = 'Player cannot make moves out of turn';
+                        res.status(403);
+                    }
+                } else {
+                    responseJSON.status = 'Could not find session';
+                    res.status(404);
+                }
+            } else {
+                responseJSON.status = 'Invalid game URL';
+                res.status(403);
+            }
+        } else {
+            log({
+                message: 'Body failed validation',
+                body: JSON.stringify(req.body)
+            });
+            res.status(403);
+        }
+    } else {
+        log({
+            message: 'Body does not contain JSON'
+        });
         res.status(403);
     }
 
