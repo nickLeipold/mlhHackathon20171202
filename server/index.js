@@ -162,7 +162,7 @@ app.post('/api/game/*', function(req, res, next) {
                             responseJSON.status = 'success';
                             responseJSON.board = encodeBoard(stdoutText);
                         } catch (e) {
-                            if (e.status == 2) {
+                            if (e.status == 3) {
                                 // game over
                                 responseJSON.status = 'gameover';
                                 responseJSON.board = encodeBoard(stdoutText);
