@@ -151,10 +151,16 @@ app.post('/api/game/*', function(req, res, next) {
                     var session = db[sessionKey];
                     if (req.body.myPlayer === session.currentPlayer) {
                         var boardStr = session.board + ' ' + session.currentPlayer;
+                        log({
+                            message: boardStr,
+                            move: req.body.move
+                        });
 
                         var stdoutText = '';
                         try {
-                            var stdoutText = childprocess.execFileSync('/usr/bin/python', [
+                            var stdoutText = childprocess.execFileSync('/bin/bash', [
+                                '-c',
+                                'echo',
                                 '/home/webaccess/mlhHackathon20121202/game.py',
                                 boardStr,
                                 req.body.move
