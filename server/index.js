@@ -108,7 +108,7 @@ app.post("/api/newgame", function(req, res, next) {
 app.get('/api/game/*', function(req, res, next) {
     var responseJSON = {
         status: 'failed',
-        gamestate: '',
+        gameState: '',
         board: [],
         currentPlayer: ''
     };
