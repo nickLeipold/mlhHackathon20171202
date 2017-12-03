@@ -20,7 +20,7 @@ if len(sys.argv[2]) == 4:
 
     	board.push(move)
     	if board.is_game_over():
-    		code = 2
+    		code = 3
     	fen = board.fen()
     	print(fen)
     	sys.exit(0)
