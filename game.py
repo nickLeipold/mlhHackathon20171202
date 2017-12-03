@@ -30,5 +30,5 @@ if len(sys.argv[2]) == 4:
         print(fen)
     	sys.exit(code)
 
-print(sys.argv[2])
+# print(sys.argv[2])
 sys.exit(-1)
