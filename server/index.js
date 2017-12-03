@@ -150,7 +150,12 @@ app.post('/api/game/*', function(req, res, next) {
                 if (sessionKey in db) {
                     var session = db[sessionKey];
                     if (req.body.myPlayer === session.currentPlayer) {
-                        var boardStr = session.board + ' ' + session.currentPlayer;
+                        var boardStr;
+                        if (session.currentPlayer == 'w') {
+                            boardStr = session.board + ' w';
+                        } else {
+                            boardStr = session.board + ' b';
+                        }
                         log({
                             message: boardStr,
                             move: req.body.move
@@ -158,24 +163,42 @@ app.post('/api/game/*', function(req, res, next) {
 
                         var stdoutText = '';
                         try {
-                            var stdoutText = childprocess.execFileSync('/bin/bash', [
-                                '-c',
-                                'echo',
-                                '/home/webaccess/mlhHackathon20121202/game.py',
+                            var stdoutText = childprocess.execFileSync(
+                                '/home/webaccess/mlhHackathon20171202/game.py', [
                                 boardStr,
                                 req.body.move
                             ]);
                             responseJSON.status = 'success';
-                            responseJSON.board = encodeBoard(stdoutText);
+                            responseJSON.board = encodeBoard(stdoutText.toString());
+                            db[sessionKey] = stdoutText.toString();
                         } catch (e) {
                             if (e.status == 3) {
                                 // game over
                                 responseJSON.status = 'gameover';
-                                responseJSON.board = encodeBoard(stdoutText);
-                            } else {
+                                responseJSON.board = encodeBoard(stdoutText.toString());
+                            } else if (e.status == 4) {
                                 // Illegal move
                                 responseJSON.status = 'illegal';
                                 responseJSON.board = encodeBoard(session.board);
+                            } else if (e.status == 5) {
+                                // not enough args
+                                responseJSON.status = 'failed';
+                                responseJSON.board = encodeBoard(session.board);
+                                log({
+                                    message: 'not enough args',
+                                    status: e.status,
+                                    stdout: e.stdout.toString(),
+                                    stderr: e.stderr.toString()
+                                });
+                            } else {
+                                responseJSON.status = 'failed';
+                                responseJSON.board = encodeBoard(session.board);
+                                log({
+                                    message: 'unknown',
+                                    status: e.status,
+                                    stdout: e.stdout.toString(),
+                                    stderr: e.stderr.toString()
+                                });
                             }
                         }
 
