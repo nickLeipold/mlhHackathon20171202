@@ -1,2 +1,13 @@
 {
+    "title": "Propose move",
+    "type": "object",
+    "properties": {
+        "myPlayer": {
+            "enum": ["w", "b"]
+        },
+        "move": {
+            "type": "string"
+        }
+    },
+    "required": ["myPlayer", "move"]
 }
