@@ -11,7 +11,8 @@ if len(sys.argv[2]) == 4:
     code = 0
 
     if board.is_game_over():
-    	print("game is already over")
+        fen = board.fen()
+        print(fen)
     	code = 2
     	sys.exit(code)
 
@@ -25,8 +26,9 @@ if len(sys.argv[2]) == 4:
     	sys.exit(0)
     else:
     	code = -1
-    	print("Illegal move")
+        fen = board.fen()
+        print(fen)
     	sys.exit(code)
 
-print("improper move")
+print(sys.argv[2])
 sys.exit(-1)
